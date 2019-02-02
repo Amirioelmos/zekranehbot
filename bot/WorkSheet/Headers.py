@@ -1,0 +1,16 @@
+
+class WorkSheetHeaders:
+    jazb_status_text = "متن نظر هیئت جذب"
+    jazb_status = "نظر هیئت جذب"
+    time_dabir_khane = "زمان بررسی دبیرخانه"
+    time_jazb = "زمان بررسی هیئت جذب"
+    time = "زمان ثبت"
+    id = "کد پیگیری"
+    name = "نام و نام خانوادگی"
+    father_name = "اسم پدر"
+    national_code = "کد ملی"
+    howze_code = "کد حوزوی"
+    state = "استان"
+    edu_level = "سطح تحصیلات"
+    dabir_khane_status = "نظر دبیرخانه"
+    dabir_khane_status_text = "متن نظر دبیرخانه"

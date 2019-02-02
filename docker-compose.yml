@@ -1,0 +1,44 @@
+version: '3'
+services:
+  pg_zekraneh_bot:
+    image: docker.bale.ai/bank/balepostgres:1.6.0
+    container_name: pg_zekraneh_bot
+    environment:
+      - POSTGRES_USER=zekraneh_bot
+      - POSTGRES_PASSWORD=****************
+      - POSTGRES_DB=zekraneh_db
+      - TZ=Asia/Tehran
+    ports:
+      - 54107:5432
+    volumes:
+      - /home/elenoon/docker/volumes/pg_zekraneh_bot4/postgres/:/var/lib/postgresql/data/
+
+  zekraneh_bot:
+    image: docker.bale.ai/bank/zekraneh_bot:1.0-4
+    container_name: zekraneh_bot
+    restart: always
+    environment:
+      # PostgreSQL Config
+      - POSTGRES_USER=zekraneh_bot
+      - POSTGRES_PASSWORD=sdhglgslahglaskjdfsfglashg@lsakjgs1231
+      - POSTGRES_DB=zekraneh_db
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=pg_zekraneh_bot
+      # Config
+      - BASE_URL=wss://api.bale.ai/v1/bots/
+#      - TOKEN=a2a98561c716dd10f10c20d5cbda0a8f2477692f
+      - TOKEN=37b807b75a2b994f3a8c4762562ce6d42c0362a7
+      - SYSTEM_LOCAL=fa_IR
+      - RESENDING_MAX_TRY=5
+      - REUPLOADING_MAX_TRY=5
+      # Log config
+      - USE_GRAYLOG=2
+      - LOG_SOURCE=pg_template_bot
+      - GRAYLOG_HOST=192.168.21.113
+      - GRAYLOG_PORT=12201
+      - LOG_LEVEL=20
+      - LOG_FACILITY_NAME=pg_template_bot_facility
+      - MONITORING_HASH=
+    depends_on:
+      - pg_zekraneh_bot
+
