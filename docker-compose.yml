@@ -26,8 +26,7 @@ services:
       - POSTGRES_HOST=pg_zekraneh_bot
       # Config
       - BASE_URL=wss://api.bale.ai/v1/bots/
-#      - TOKEN=a2a98561c716dd10f10c20d5cbda0a8f2477692f
-      - TOKEN=37b807b75a2b994f3a8c4762562ce6d42c0362a7
+      - TOKEN=token
       - SYSTEM_LOCAL=fa_IR
       - RESENDING_MAX_TRY=5
       - REUPLOADING_MAX_TRY=5

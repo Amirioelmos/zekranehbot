@@ -1,6 +1,6 @@
-# Project Title 
+# Zekraneh
 
-One Paragraph of project description goes here
+Using this bot, you can read the Quran online.
 
 ## Getting Started
 
@@ -11,7 +11,7 @@ These instructions will get you a copy of the project up and running on your loc
 What things you need to install the software and how to install them
 
 ```
-Give examples
+docker build -t zekraneh_bot .
 ```
 
 ### Installing
@@ -21,13 +21,13 @@ A step by step series of examples that tell you how to get a development env run
 Say what the step will be
 
 ```
-Give the example
+docker-compose up
 ```
 
 And repeat
 
 ```
-until finished
+docker logs -f zekraneh_bot
 ```
 
 End with an example of getting some data out of the system or using it for a little demo
@@ -41,20 +41,16 @@ Explain how to run the automated tests for this system
 Explain what these tests test and why
 
 ```
-Give an example
+docker-compose down
 ```
 
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
 
 ## Deployment
 
-Add additional notes about how to deploy this on a live system
+```
+docker-compose up -d
+
+```
 
 ## Built With
 
@@ -72,13 +68,13 @@ We use [bitbucket](http://bitbucket.voroodi.ir:8080/) for versioning. For the ve
 
 ## Authors
 
-* **??** - *Initial work* - [??](https://github.com/??)
+* **Amirioelmose** - *Initial work* - [Github](https://github.com/Amirioelmos)
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
 
 ## License
 
-This project is licensed under the ?? License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
 
