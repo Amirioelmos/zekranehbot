@@ -1,8 +1,11 @@
+import datetime
 import functools
 import sys
 import time
 import urllib.request
 import urllib.parse
+
+from balebot.models.base_models import Peer
 from bs4 import BeautifulSoup
 import glob
 import os
@@ -18,7 +21,7 @@ from bot.DataBase.Logic.BookMark import add_book_mark, is_marked_for_user, remov
 from bot.DataBase.Logic.MainText import count_of_aye, get_aye
 from bot.DataBase.Logic.MigrationManager import run_migrate
 from bot.DataBase.Logic.Page import get_page
-from bot.DataBase.Logic.user import is_user, add_user
+from bot.DataBase.Logic.user import is_user, add_user, get_all_users
 
 from bot.DataBase.models.base import engine, Base, Session
 from bot.Quran.Soore import soore_show, soore_number
@@ -98,6 +101,7 @@ def start_bot(bot, update):
         msg = TemplateMessage(txt_msg, btn)
         send_message(msg, _get_peer(update), Step.showing_menu)
         dispatcher.register_conversation_next_step_handler(update, [
+            CommandHandler("/msgtoall", get_message_of_send_to_all),
             MessageHandler(TemplateResponseFilter(keywords=ButtonMessage.tarjome), tarjome_step_1),
             MessageHandler(TemplateResponseFilter(keywords=ButtonMessage.tafsir), tafsir_step_1),
             MessageHandler(TemplateResponseFilter(keywords=ButtonMessage.read), read_step_1),
@@ -438,6 +442,98 @@ def remove_from_book_mark(bot, update, page_number):
         ])
     else:
         check_message("asdasdasd", update)
+
+
+@dispatcher.command_handler(["/msgtoall"])
+def get_message_of_send_to_all(bot, update):
+    user = update.get_effective_user().peer_id
+    if user in BotConfig.admin_user_id_list:
+        text = BotMessage.enter_sta_message
+        msg = TextMessage(text)
+        send_message(msg, _get_peer(update))
+        dispatcher.register_conversation_next_step_handler(update, [
+            MessageHandler(DefaultFilter(), set_message_for_send_to_all)
+        ])
+    else:
+        return
+
+
+def set_message_for_send_to_all(bot, update):
+    sta_message = update.get_effective_message()
+    dispatcher.set_conversation_data(update, "sta_msg", sta_message)
+    text = BotMessage.accept_to_send_to_all
+    btn = [
+        TemplateMessageButton(ButtonMessage.yes, ButtonMessage.yes, 0),
+        TemplateMessageButton(ButtonMessage.no, ButtonMessage.no, 0),
+    ]
+    msg = TemplateMessage(TextMessage(text), btn)
+    send_message(msg, _get_peer(update))
+    dispatcher.register_conversation_next_step_handler(update, [
+        MessageHandler(TemplateResponseFilter(keywords=ButtonMessage.yes), send_to_all_init),
+        MessageHandler(TemplateResponseFilter(keywords=ButtonMessage.no), start_bot),
+    ])
+
+
+def send_to_all_init(bot, update):
+    all_user = get_all_users()
+    if all_user:
+        sta_message = dispatcher.get_conversation_data(update, "sta_msg")
+        my_logger.info("Start to send STA message at time : {}".format(datetime.datetime.now()))
+        send_to_all((all_user, sta_message))
+
+        def send_done(_, __):
+            return
+
+        def send_fail(_, __):
+            return
+
+        updater.dispatcher.bot.send_message(TextMessage("Done"), update.get_effective_user()
+                                            , success_callback=send_done, failure_callback=send_fail)
+        dispatcher.finish_conversation(update)
+
+    else:
+        my_logger.info("Fail to Send to All  user")
+
+        def send_done(_, __):
+            return
+
+        def send_fail(_, __):
+            return
+
+        updater.dispatcher.bot.send_message(TextMessage("Fail"), update.get_effective_user()
+                                            , success_callback=send_done, failure_callback=send_fail)
+        dispatcher.finish_conversation(update)
+
+
+def send_to_all(args):
+    all_user = args[0]
+    msg = args[1]
+    if len(all_user) > 0:
+        user = all_user.pop()
+        peer = Peer("User", user.peer_id, user.access_hash)
+
+        def send_done(response , user_data):
+            kwargs = user_data['kwargs']
+            _all_user = kwargs["all_user"]
+            my_logger.info("Send To All - remain : {}".format(len(_all_user)))
+            loop.call_later(0.5, send_to_all, (_all_user, msg))
+
+        def send_fail(response, user_data):
+            kwargs = user_data['kwargs']
+            fail_user = kwargs["user"]
+            _all_user = kwargs["all_user"]
+            my_logger.info("Fail To send STA message to user : {}".format(fail_user))
+            loop.call_later(0.5, send_to_all, (_all_user, msg))
+
+        kwargs = {'all_user': all_user, 'user': user}
+        updater.dispatcher.bot.send_message(msg, peer, success_callback=send_done, failure_callback=send_fail,
+                                            kwargs=kwargs)
+    else:
+        my_logger.info("Finish to send STA message at time : {}".format(datetime.datetime.now()))
+        return
+
+
+
 
 @dispatcher.command_handler([Command.help])
 def upload(bot, update):

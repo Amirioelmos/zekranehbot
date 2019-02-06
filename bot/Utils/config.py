@@ -3,6 +3,7 @@ import logging
 
 
 class BotConfig:
+    admin_user_id_list = ['1341381900', '904801570', '463989315']
     project_path = os.getcwd()
     daily_report_filename = None
     full_report_filename = None

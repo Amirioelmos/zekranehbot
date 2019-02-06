@@ -27,3 +27,10 @@ def add_user(peer_id, access_hash):
     except Exception as e:
         session.rollback()
         my_logger.info("Adding new user failed, {}".format(e))
+
+def get_all_users():
+    try:
+        return session.query(User).all()
+    except Exception as e:
+        my_logger.info("Fail to Load all Users. : {}".format(e))
+        return 0
